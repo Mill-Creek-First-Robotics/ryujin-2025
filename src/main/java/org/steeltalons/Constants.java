@@ -32,6 +32,8 @@ public class Constants {
     public static final int kRearRight = 4;
     // [Elevator] // placeholder
     public static final int kElevatorMotor = 5;
+    // [Arm] // placeholder
+    public static final int kArmMotor = 6;
   } // end MotorControllers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   public static class DrivetrainConstants {
@@ -79,6 +81,45 @@ public class Constants {
     public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
         kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared);
   } // end ElevatorConstants ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  public static class ArmConstants {
+    private ArmConstants() {
+    }
+
+    /**
+     * Contains static constants that represent all the different arm positions.
+     * Units are in degrees. Zero is horizontal. Counterclockwise (if looking at the
+     * robot where the arm is facing to the right) is positive.
+     */
+    public static class ArmPositions {
+      public static final double kBottom = -90;
+      public static final double kHorizontal = 0;
+      public static final double kL1 = 0;
+      public static final double kL2 = 55;
+      public static final double kL3 = 55;
+      public static final double kL4 = 59.18654;
+      public static final double kTop = 90;
+    }
+
+    public static final boolean kInverted = true;
+    // 20:1 gearbox + 2:1 pulleys
+    public static final double kGearing = 40;
+
+    public static final double kP = 0.1;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+    public static final double kG = 0.0;
+    public static final double kV = 0.0;
+    public static final double kS = 0.0;
+
+    public static final double kMaxAngleDegrees = 95;
+    public static final double kMinAngleDegrees = -100;
+
+    public static final double kMaxVelocityDegreesPerSecond = 270;
+    public static final double kMaxAccelerationDegreesPerSecondSquared = 720;
+    public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
+        kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSquared);
+  } // end ArmConstants ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   public static class IntakeConstants {
     private IntakeConstants() {

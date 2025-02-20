@@ -6,6 +6,7 @@ package org.steeltalons;
 
 import static org.steeltalons.Constants.kControllerPort;
 
+import org.steeltalons.subsystems.ArmSubsystem;
 import org.steeltalons.subsystems.DriveSubsystem;
 import org.steeltalons.subsystems.ElevatorSubsystem;
 
@@ -18,6 +19,7 @@ public class RobotContainer {
 
   private DriveSubsystem driveSubsystem = new DriveSubsystem();
   private ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+  private ArmSubsystem armSubsystem = new ArmSubsystem();
 
   public RobotContainer() {
     configureDefaultCommands();
@@ -34,6 +36,7 @@ public class RobotContainer {
               true);
         }));
     elevatorSubsystem.setDefaultCommand(elevatorSubsystem.moveToTargetPosition());
+    armSubsystem.setDefaultCommand(armSubsystem.moveToTargetPosition());
   }
 
   private void configureBindings() {
