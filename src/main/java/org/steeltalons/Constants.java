@@ -8,6 +8,8 @@ public class Constants {
   private Constants() {
   }
 
+  public static final int kControllerPort = 0;
+
   public static class MotorControllers {
     private MotorControllers() {
     }
