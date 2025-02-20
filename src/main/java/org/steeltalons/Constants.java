@@ -8,6 +8,11 @@ public class Constants {
     private MotorControllers() {
     }
 
+    // [Drivetrain] // placeholders
+    public static int kFrontLeft = 1;
+    public static int kFrontRight = 2;
+    public static int kRearLeft = 3;
+    public static int kRearRight = 4;
   } // end MotorControllers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   public static class DrivetrainConstants {
