@@ -77,7 +77,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   /**
    * Sets the voltage on the elevator motor while considering hard limits.
    *
-   * Prefer to call {@link ElevatorSubsystem.moveToTargetPosition}, but this can
+   * Prefer to call {@link ElevatorSubsystem#moveToTargetPosition}, but this can
    * be used for manual control if needed.
    */
   public void setVoltage(double volts) {

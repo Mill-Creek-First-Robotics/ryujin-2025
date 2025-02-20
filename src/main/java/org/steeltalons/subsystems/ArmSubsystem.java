@@ -81,7 +81,7 @@ public class ArmSubsystem extends SubsystemBase {
   /**
    * Sets the voltage on the arm motor while considering hard limits.
    *
-   * Prefer to call {@link ArmSubsystem.moveToTargetPosition}, but this can be
+   * Prefer to call {@link ArmSubsystem#moveToTargetPosition}, but this can be
    * used for manual control if needed.
    */
   public void setVoltage(double volts) {
