@@ -12,6 +12,8 @@ import static org.steeltalons.Constants.ElevatorConstants.kV;
 import static org.steeltalons.Constants.MotorControllers.kDefaultNeo550Config;
 import static org.steeltalons.Constants.MotorControllers.kElevatorMotor;
 
+import org.steeltalons.lib.Util;
+
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -79,7 +81,7 @@ public class ElevatorSubsystem extends SubsystemBase {
    * be used for manual control if needed.
    */
   public void setVoltage(double volts) {
-    double input = Math.clamp(volts, -12, 12);
+    double input = Util.clamp(volts, -12, 12);
     double currentPos = getPosition();
 
     if (currentPos > kMaxHeight || currentPos < kMinHeight) {
