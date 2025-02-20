@@ -24,10 +24,10 @@ public class Constants {
         .smartCurrentLimit(20);
 
     // [Drivetrain] // placeholders
-    public static int kFrontLeft = 1;
-    public static int kFrontRight = 2;
-    public static int kRearLeft = 3;
-    public static int kRearRight = 4;
+    public static final int kFrontLeft = 1;
+    public static final int kFrontRight = 2;
+    public static final int kRearLeft = 3;
+    public static final int kRearRight = 4;
   } // end MotorControllers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   public static class DrivetrainConstants {
