@@ -34,6 +34,8 @@ public class Constants {
     public static final int kElevatorMotor = 5;
     // [Arm] // placeholder
     public static final int kArmMotor = 6;
+    // [Intake] // placeholder
+    public static final int kIntakeMotor = 7;
   } // end MotorControllers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   public static class DrivetrainConstants {
@@ -124,6 +126,10 @@ public class Constants {
   public static class IntakeConstants {
     private IntakeConstants() {
     }
+
+    public static final boolean kInverted = false;
+    public static final double kIntakeVoltage = 3;
+    public static final double kOuttakeVoltage = -12;
 
   } // end IntakeConstants ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 }
