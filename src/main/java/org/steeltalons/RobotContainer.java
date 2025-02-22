@@ -9,6 +9,7 @@ import static org.steeltalons.Constants.kControllerPort;
 import org.steeltalons.subsystems.ArmSubsystem;
 import org.steeltalons.subsystems.DriveSubsystem;
 import org.steeltalons.subsystems.ElevatorSubsystem;
+import org.steeltalons.subsystems.IntakeSubsystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -20,6 +21,7 @@ public class RobotContainer {
   private DriveSubsystem driveSubsystem = new DriveSubsystem();
   private ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
   private ArmSubsystem armSubsystem = new ArmSubsystem();
+  private IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
   public RobotContainer() {
     configureDefaultCommands();
@@ -40,6 +42,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    controller.rightBumper().whileTrue(intakeSubsystem.runIntake());
+    controller.leftBumper().whileTrue(intakeSubsystem.reverseIntake());
   }
 
   public Command getAutonomousCommand() {
