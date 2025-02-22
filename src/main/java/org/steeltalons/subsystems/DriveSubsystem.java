@@ -29,7 +29,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SparkMax rrMotor = new SparkMax(kRearRight, MotorType.kBrushless);
   private MecanumDrive drivetrain = new MecanumDrive(flMotor, rlMotor, frMotor, rrMotor);
   private AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
-  
+
   public DriveSubsystem() {
     SparkBaseConfig config = new SparkMaxConfig().apply(kDefaultNeoConfig);
 
@@ -41,19 +41,24 @@ public class DriveSubsystem extends SubsystemBase {
     rrMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  // --- Public Member Functions ------------------------------------------------------------------
-  
+  // --- Public Member Functions -------------------------------------------------
+
   /**
    * Drive method for Mecanum platform.
    *
-   * Angles are measured counterclockwise from the positive X axis. The robot's speed is
+   * Angles are measured counterclockwise from the positive X axis. The robot's
+   * speed is
    * independent of its angle or rotation rate.
    *
-   * @param x The robot's speed along the X axis [-1.0..1.0]. Forward is positive.
-   * @param y The robot's speed along the Y axis [-1.0..1.0]. Left is positive.
-   * @param z The robot's rotation rate around the Z axis [-1.0..1.0]. Counterclockwise is
-   *     positive.
-   * @param isFieldOriented Determines whether to drive the robot relative to the field, or to itself.
+   * @param x               The robot's speed along the X axis [-1.0..1.0].
+   *                        Forward is positive.
+   * @param y               The robot's speed along the Y axis [-1.0..1.0]. Left
+   *                        is positive.
+   * @param z               The robot's rotation rate around the Z axis
+   *                        [-1.0..1.0]. Counterclockwise is
+   *                        positive.
+   * @param isFieldOriented Determines whether to drive the robot relative to the
+   *                        field, or to itself.
    */
   public void driveCartesian(double x, double y, double z, boolean isFieldOriented) {
     Rotation2d heading = new Rotation2d();
