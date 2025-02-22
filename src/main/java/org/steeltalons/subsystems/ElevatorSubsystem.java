@@ -91,6 +91,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     motor.setVoltage(input);
   }
 
+  /**
+   * Returns true when the elevator is at its target position.
+   */
+  public boolean atSetpoint() {
+    return feedbackController.atSetpoint();
+  }
+
   // --- Private Member Functions ------------------------------------------------
 
   private double getPosition() {

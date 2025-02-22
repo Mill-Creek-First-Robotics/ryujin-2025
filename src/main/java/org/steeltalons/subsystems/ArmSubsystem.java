@@ -95,6 +95,13 @@ public class ArmSubsystem extends SubsystemBase {
     arm.setVoltage(input);
   }
 
+  /**
+   * Returns true when the arm is at its target position.
+   */
+  public boolean atSetpoint() {
+    return feedbackController.atSetpoint();
+  }
+
   // --- Private Member Functions ------------------------------------------------
 
   private double getPosition() {
