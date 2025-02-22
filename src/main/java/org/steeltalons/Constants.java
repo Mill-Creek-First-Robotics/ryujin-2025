@@ -52,7 +52,7 @@ public class Constants {
      * Contains static constants that represent all the different elevator
      * positions. Units are in Rotations.
      */
-    public static class Positions {
+    public static class ElevatorPositions {
       public static final double kBottom = 0.0698;
       public static final double kIntakePrep = 0.55;
       public static final double kIntake = 0.355;
