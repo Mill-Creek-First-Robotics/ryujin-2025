@@ -34,12 +34,15 @@ public class RobotCommands {
    *
    * @param arm      the {@link ArmSubsystem} to control.
    * @param elevator the {@link ElevatorSubsystem} to control.
+   * @apiNote Does not require either subsystem so that they can still track their
+   *          setpoints with their respective default commands. The command will
+   *          end when both subsystems reach their setpoints.
    */
   public static Command prepareCoralIntake(ArmSubsystem arm, ElevatorSubsystem elevator) {
     return Commands.runOnce(() -> {
       arm.setTargetPosition(ArmPositions.kBottom);
       elevator.setTargetPosition(ElevatorPositions.kIntakePrep);
-    });
+    }).andThen(waitUntilAtSetpoint(arm, elevator));
   }
 
   /**
@@ -48,6 +51,9 @@ public class RobotCommands {
    *
    * @param arm      the {@link ArmSubsystem} to control.
    * @param elevator the {@link ElevatorSubsystem} to control.
+   * @apiNote Does not require either subsystem so that they can still track their
+   *          setpoints with their respective default commands. The command will
+   *          end when both subsystems reach their setpoints.
    */
   public static Command intakeCoral(ArmSubsystem arm, ElevatorSubsystem elevator) {
     return Commands.sequence(
@@ -77,6 +83,9 @@ public class RobotCommands {
    * @param level    the {@link Level} to prepare the subsystems for scoring at.
    * @param arm      the {@link ArmSubsystem} to control.
    * @param elevator the {@link ElevatorSubsystem} to control.
+   * @apiNote Does not require either subsystem so that they can still track their
+   *          setpoints with their respective default commands. The command will
+   *          end when both subsystems reach their setpoints.
    */
   public static Command prepareScore(Level level, ArmSubsystem arm, ElevatorSubsystem elevator) {
     double elevatorTarget;
@@ -109,7 +118,8 @@ public class RobotCommands {
     return Commands.sequence(
         Commands.runOnce(() -> arm.setTargetPosition(armTarget)),
         Commands.waitSeconds(0.5),
-        Commands.runOnce(() -> elevator.setTargetPosition(elevatorTarget)))
+        Commands.runOnce(() -> elevator.setTargetPosition(elevatorTarget)),
+        waitUntilAtSetpoint(arm, elevator))
         .beforeStarting(() -> targetLevel = level);
   }
 
