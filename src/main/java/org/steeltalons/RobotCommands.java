@@ -42,7 +42,7 @@ public class RobotCommands {
     return Commands.runOnce(() -> {
       arm.setTargetPosition(ArmPositions.kBottom);
       elevator.setTargetPosition(ElevatorPositions.kIntakePrep);
-    }).andThen(waitUntilAtSetpoint(arm, elevator));
+    }).andThen(waitUntilAtSetpoint(arm, elevator)).withName("prepareCoral");
   }
 
   /**
@@ -73,7 +73,7 @@ public class RobotCommands {
             Commands.runOnce(() -> arm.setTargetPosition(ArmPositions.kTop)),
             Commands.waitSeconds(0.5)
                 .andThen(Commands.runOnce(() -> elevator.setTargetPosition(ElevatorPositions.kBottom)))),
-        waitUntilAtSetpoint(arm, elevator));
+        waitUntilAtSetpoint(arm, elevator)).withName("intakeCoral");
   }
 
   /**
@@ -120,7 +120,7 @@ public class RobotCommands {
         Commands.waitSeconds(0.5),
         Commands.runOnce(() -> elevator.setTargetPosition(elevatorTarget)),
         waitUntilAtSetpoint(arm, elevator))
-        .beforeStarting(() -> targetLevel = level);
+        .beforeStarting(() -> targetLevel = level).withName("prepareScore");
   }
 
   /**
