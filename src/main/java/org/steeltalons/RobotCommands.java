@@ -157,4 +157,52 @@ public class RobotCommands {
 
     return toRun.andThen(waitUntilAtSetpoint(arm, elevator)).withName("Score");
   }
+
+  // --- Algae Scoring -----------------------------------------------------------
+
+  /**
+   * Returns a {@link Command} prepares the robot to remove the L2 algae.
+   *
+   * @param arm      the {@link ArmSubsystem} to control.
+   * @param elevator the {@link ElevatorSubsystem} to control.
+   * @apiNote Does not require either subsystem so that they can still track their
+   *          setpoints with their respective default commands. The command will
+   *          end when both subsystems reach their setpoints.
+   */
+  public static Command prepareAlgaeL2Removal(ArmSubsystem arm, ElevatorSubsystem elevator) {
+    return Commands.runOnce(() -> {
+      elevator.setTargetPosition(ElevatorPositions.kAlgaeL2);
+      arm.setTargetPosition(ArmPositions.kHorizontal);
+    }).andThen(waitUntilAtSetpoint(arm, elevator)).withName("prepareAlgaeL2Removal");
+  }
+
+  /**
+   * Returns a {@link Command} prepares the robot to remove the L3 algae.
+   *
+   * @param arm      the {@link ArmSubsystem} to control.
+   * @param elevator the {@link ElevatorSubsystem} to control.
+   * @apiNote Does not require either subsystem so that they can still track their
+   *          setpoints with their respective default commands. The command will
+   *          end when both subsystems reach their setpoints.
+   */
+  public static Command prepareAlgaeL3Removal(ArmSubsystem arm, ElevatorSubsystem elevator) {
+    return Commands.runOnce(() -> {
+      elevator.setTargetPosition(ElevatorPositions.kAlgaeL3);
+      arm.setTargetPosition(ArmPositions.kHorizontal);
+    }).andThen(waitUntilAtSetpoint(arm, elevator)).withName("prepareAlgaeL3Removal");
+  }
+
+  /**
+   * Returns a {@link Command} that removes the algae at the current level.
+   *
+   * @param arm      the {@link ArmSubsystem} to control. Does not use this
+   *                 parameter right now.
+   * @param elevator the {@link ElevatorSubsystem} to control.
+   * @apiNote Does not require either subsystem so that they can still track their
+   *          setpoints with their respective default commands. The command will
+   *          end when both subsystems reach their setpoints.
+   */
+  public static Command removeAlgae(ArmSubsystem arm, ElevatorSubsystem elevator) {
+    return elevator.changePositionBy(-0.06).andThen(waitUntilAtSetpoint(arm, elevator)).withName("removeAlgae");
+  }
 }
