@@ -1,10 +1,14 @@
 package org.steeltalons.subsystems;
 
+import static org.steeltalons.Constants.DrivetrainConstants.kGearRatio;
+import static org.steeltalons.Constants.DrivetrainConstants.kWheelDiameter;
 import static org.steeltalons.Constants.MotorControllers.kDefaultNeoConfig;
 import static org.steeltalons.Constants.MotorControllers.kFrontLeft;
 import static org.steeltalons.Constants.MotorControllers.kFrontRight;
 import static org.steeltalons.Constants.MotorControllers.kRearLeft;
 import static org.steeltalons.Constants.MotorControllers.kRearRight;
+
+import org.steeltalons.Constants.DrivetrainConstants;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -15,7 +19,13 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -30,8 +40,18 @@ public class DriveSubsystem extends SubsystemBase {
   private MecanumDrive drivetrain = new MecanumDrive(flMotor, rlMotor, frMotor, rrMotor);
   private AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 
+  // math & telemetry
+  private MecanumDrivePoseEstimator poseEstimator;
+  private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic("Robot Pose", Pose2d.struct).publish();
+
   public DriveSubsystem() {
     SparkBaseConfig config = new SparkMaxConfig().apply(kDefaultNeoConfig);
+    config.encoder
+        // rotations to meters
+        .positionConversionFactor(Math.PI * kWheelDiameter.baseUnitMagnitude() / kGearRatio)
+        // rpm to meters per second
+        .velocityConversionFactor(Math.PI * kWheelDiameter.baseUnitMagnitude() / 60 / kGearRatio);
 
     flMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rlMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -39,6 +59,10 @@ public class DriveSubsystem extends SubsystemBase {
     config.inverted(true);
     frMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rrMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    poseEstimator = new MecanumDrivePoseEstimator(DrivetrainConstants.kDriveKinematics, gyro.getRotation2d(),
+        // will use pathplanner for initial pose eventually
+        getWheelPositions(), new Pose2d());
   }
 
   // --- Public Member Functions -------------------------------------------------
@@ -66,5 +90,26 @@ public class DriveSubsystem extends SubsystemBase {
       heading = gyro.getRotation2d().unaryMinus();
     }
     drivetrain.driveCartesian(x, y, z, heading);
+  }
+
+  // --- Private Member Functions ------------------------------------------------
+
+  private MecanumDriveWheelPositions getWheelPositions() {
+    return new MecanumDriveWheelPositions(
+        flMotor.getEncoder().getPosition(),
+        frMotor.getEncoder().getPosition(),
+        rlMotor.getEncoder().getPosition(),
+        rrMotor.getEncoder().getPosition());
+  }
+
+  // --- SubsystemBase -----------------------------------------------------------
+
+  @Override
+  public void periodic() {
+    poseEstimator.update(gyro.getRotation2d(), getWheelPositions());
+
+    if (!DriverStation.isFMSAttached()) {
+      posePublisher.set(poseEstimator.getEstimatedPosition());
+    }
   }
 }

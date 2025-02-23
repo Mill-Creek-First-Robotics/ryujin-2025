@@ -25,6 +25,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -106,5 +107,16 @@ public class ArmSubsystem extends SubsystemBase {
 
   private double getPosition() {
     return arm.getEncoder().getPosition();
+  }
+
+  // --- SubsystemBase -----------------------------------------------------------
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.addDoubleProperty("position (deg)", this::getPosition, null);
+    builder.addDoubleProperty("setpoint (deg)", () -> feedbackController.getSetpoint().position, null);
+    builder.addDoubleProperty("velocity (dps)", arm.getEncoder()::getVelocity, null);
+    builder.addDoubleProperty("current", arm::getOutputCurrent, null);
+    builder.addDoubleProperty("output volts", () -> arm.get() * 12, null);
   }
 }

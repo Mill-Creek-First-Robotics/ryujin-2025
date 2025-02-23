@@ -11,6 +11,8 @@ import org.steeltalons.subsystems.DriveSubsystem;
 import org.steeltalons.subsystems.ElevatorSubsystem;
 import org.steeltalons.subsystems.IntakeSubsystem;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -26,6 +28,14 @@ public class RobotContainer {
   public RobotContainer() {
     configureDefaultCommands();
     configureBindings();
+
+    // only log to NetworkTables when not in a match
+    if (!DriverStation.isFMSAttached()) {
+      SmartDashboard.putData(driveSubsystem);
+      SmartDashboard.putData(elevatorSubsystem);
+      SmartDashboard.putData(armSubsystem);
+      SmartDashboard.putData(intakeSubsystem);
+    }
   }
 
   private void configureDefaultCommands() {

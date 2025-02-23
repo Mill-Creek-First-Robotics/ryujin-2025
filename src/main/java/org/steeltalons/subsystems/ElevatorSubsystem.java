@@ -23,6 +23,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -102,5 +103,16 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private double getPosition() {
     return motor.getEncoder().getPosition();
+  }
+
+  // --- SubsystemBase -----------------------------------------------------------
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.addDoubleProperty("position (m)", this::getPosition, null);
+    builder.addDoubleProperty("setpoint (m)", () -> feedbackController.getSetpoint().position, null);
+    builder.addDoubleProperty("velocity (mps)", motor.getEncoder()::getVelocity, null);
+    builder.addDoubleProperty("current", motor::getOutputCurrent, null);
+    builder.addDoubleProperty("output volts", () -> motor.get() * 12, null);
   }
 }
