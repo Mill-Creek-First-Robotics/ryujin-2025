@@ -104,6 +104,9 @@ public class Constants {
     public static final double kV = 1;
     public static final double kS = 1;
 
+    // change (in meters) required to score on certain reef levels
+    public static final double kScoringMovement = -0.25;
+
     // [Limits]
     public static final double kMaxHeight = 20;
     public static final double kMinHeight = 0;
@@ -136,6 +139,9 @@ public class Constants {
     public static final boolean kInverted = true;
     // 20:1 gearbox + 2:1 pulleys
     public static final double kGearing = 40;
+
+    // change (in degrees) required to score on certain reef levels
+    public static final double kScoringMovement = -45.84;
 
     public static final double kP = 0.1;
     public static final double kI = 0.0;

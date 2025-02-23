@@ -1,6 +1,8 @@
 package org.steeltalons;
 
+import org.steeltalons.Constants.ArmConstants;
 import org.steeltalons.Constants.ArmConstants.ArmPositions;
+import org.steeltalons.Constants.ElevatorConstants;
 import org.steeltalons.Constants.ElevatorConstants.ElevatorPositions;
 import org.steeltalons.subsystems.ArmSubsystem;
 import org.steeltalons.subsystems.ElevatorSubsystem;
@@ -113,8 +115,36 @@ public class RobotCommands {
 
   /**
    * Returns a {@link Command} that scores the coral on the current level.
+   *
+   * @param arm      the {@link ArmSubsystem} to control.
+   * @param elevator the {@link ElevatorSubsystem} to control.
+   * @apiNote Does not require either subsystem so that they can still track their
+   *          setpoints with their respective default commands. The command will
+   *          end when both subsystems reach their setpoints.
    */
-  public static Command score() {
-    return Commands.print("TODO");
+  public static Command score(ArmSubsystem arm, ElevatorSubsystem elevator) {
+    Command toRun;
+    switch (RobotCommands.targetLevel) {
+      case kL1 -> {
+        toRun = elevator.changePositionBy(ElevatorConstants.kScoringMovement);
+      }
+      case kL2 -> {
+        toRun = arm.changePositionBy(ArmConstants.kScoringMovement);
+      }
+      case kL3 -> {
+        toRun = arm.changePositionBy(ArmConstants.kScoringMovement);
+      }
+      case kL4 -> {
+        toRun = Commands.parallel(
+            arm.changePositionBy(ArmConstants.kScoringMovement),
+            Commands.waitSeconds(0.5).andThen(
+                elevator.changePositionBy(ElevatorConstants.kScoringMovement)));
+      }
+      default -> {
+        return Commands.none();
+      }
+    }
+
+    return toRun.andThen(waitUntilAtSetpoint(arm, elevator)).withName("Score");
   }
 }

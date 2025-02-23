@@ -27,6 +27,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -65,6 +66,17 @@ public class ArmSubsystem extends SubsystemBase {
   public void setTargetPosition(double pos) {
     feedbackController.reset(getPosition());
     feedbackController.setGoal(pos);
+  }
+
+  /**
+   * Shift the arm's target position by the provided delta.
+   *
+   * @param delta the desired change in position in degrees.
+   * @return A {@link Command} that runs once to set this subsystem's setpoint.
+   *         Does not require the ArmSubsystem.
+   */
+  public Command changePositionBy(double delta) {
+    return Commands.runOnce(() -> setTargetPosition(getPosition() + delta));
   }
 
   /**
