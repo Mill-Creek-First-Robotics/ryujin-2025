@@ -1,5 +1,6 @@
 package org.steeltalons.subsystems;
 
+import static org.steeltalons.Constants.kTuningModeEnabled;
 import static org.steeltalons.Constants.ArmConstants.kConstraints;
 import static org.steeltalons.Constants.ArmConstants.kD;
 import static org.steeltalons.Constants.ArmConstants.kG;
@@ -14,6 +15,7 @@ import static org.steeltalons.Constants.ArmConstants.kV;
 import static org.steeltalons.Constants.MotorControllers.kArmMotor;
 import static org.steeltalons.Constants.MotorControllers.kDefaultNeo550Config;
 
+import org.steeltalons.lib.TunableNumber;
 import org.steeltalons.lib.Util;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -37,6 +39,12 @@ public class ArmSubsystem extends SubsystemBase {
   private SparkMax arm = new SparkMax(kArmMotor, MotorType.kBrushless);
   private ProfiledPIDController feedbackController = new ProfiledPIDController(kP, kI, kD, kConstraints);
   private ArmFeedforward feedforwardController = new ArmFeedforward(kS, kG, kV);
+
+  private final TunableNumber p = new TunableNumber("ArmSubsystem/P", kP);
+  private final TunableNumber d = new TunableNumber("ArmSubsystem/D", kD);
+  private final TunableNumber g = new TunableNumber("ArmSubsystem/G", kG);
+  private final TunableNumber v = new TunableNumber("ArmSubsystem/V", kV);
+  private final TunableNumber s = new TunableNumber("ArmSubsystem/S", kS);
 
   public ArmSubsystem() {
     SparkBaseConfig config = new SparkMaxConfig().apply(kDefaultNeo550Config);
@@ -122,6 +130,19 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   // --- SubsystemBase -----------------------------------------------------------
+  
+  @Override
+  public void periodic() {
+    if (kTuningModeEnabled) {
+      if (p.hasChanged())
+        feedbackController.setP(p.get());
+      if (d.hasChanged())
+        feedbackController.setD(d.get());
+      // ArmFeedforward has no setter functions, so it must be reassigned
+      if (g.hasChanged() || v.hasChanged() || s.hasChanged())
+        feedforwardController = new ArmFeedforward(s.get(), g.get(), v.get());
+    }
+  }
 
   @Override
   public void initSendable(SendableBuilder builder) {

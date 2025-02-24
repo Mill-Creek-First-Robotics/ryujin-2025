@@ -1,5 +1,6 @@
 package org.steeltalons.subsystems;
 
+import static org.steeltalons.Constants.kTuningModeEnabled;
 import static org.steeltalons.Constants.ElevatorConstants.kConstraints;
 import static org.steeltalons.Constants.ElevatorConstants.kD;
 import static org.steeltalons.Constants.ElevatorConstants.kG;
@@ -12,6 +13,7 @@ import static org.steeltalons.Constants.ElevatorConstants.kV;
 import static org.steeltalons.Constants.MotorControllers.kDefaultNeo550Config;
 import static org.steeltalons.Constants.MotorControllers.kElevatorMotor;
 
+import org.steeltalons.lib.TunableNumber;
 import org.steeltalons.lib.Util;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -35,6 +37,12 @@ public class ElevatorSubsystem extends SubsystemBase {
   private SparkMax motor = new SparkMax(kElevatorMotor, MotorType.kBrushless);
   private ProfiledPIDController feedbackController = new ProfiledPIDController(kP, kI, kD, kConstraints);
   private ElevatorFeedforward feedforwardController = new ElevatorFeedforward(kS, kG, kV);
+
+  private final TunableNumber p = new TunableNumber("ElevatorSubsystem/P", kP);
+  private final TunableNumber d = new TunableNumber("ElevatorSubsystem/D", kD);
+  private final TunableNumber g = new TunableNumber("ElevatorSubsystem/G", kG);
+  private final TunableNumber v = new TunableNumber("ElevatorSubsystem/V", kV);
+  private final TunableNumber s = new TunableNumber("ElevatorSubsystem/S", kS);
 
   public ElevatorSubsystem() {
     SparkBaseConfig config = new SparkMaxConfig().apply(kDefaultNeo550Config);
@@ -118,6 +126,19 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   // --- SubsystemBase -----------------------------------------------------------
+
+  @Override
+  public void periodic() {
+    if (kTuningModeEnabled) {
+      if (p.hasChanged())
+        feedbackController.setP(p.get());
+      if (d.hasChanged())
+        feedbackController.setD(d.get());
+      // ElevatorFeedforward has no setter functions, so it must be reassigned
+      if (g.hasChanged() || v.hasChanged() || s.hasChanged())
+        feedforwardController = new ElevatorFeedforward(s.get(), g.get(), v.get());
+    }
+  }
 
   @Override
   public void initSendable(SendableBuilder builder) {
