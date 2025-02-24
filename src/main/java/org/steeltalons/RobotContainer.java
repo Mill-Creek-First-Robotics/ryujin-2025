@@ -52,6 +52,19 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    controller.povUp().onTrue(RobotCommands.prepareCoralIntake(armSubsystem, elevatorSubsystem));
+    controller.povDown().onTrue(RobotCommands.intakeCoral(armSubsystem, elevatorSubsystem));
+
+    controller.x().onTrue(RobotCommands.prepareScore(Level.kL1, armSubsystem, elevatorSubsystem));
+    controller.y().onTrue(RobotCommands.prepareScore(Level.kL2, armSubsystem, elevatorSubsystem));
+    controller.a().onTrue(RobotCommands.prepareScore(Level.kL3, armSubsystem, elevatorSubsystem));
+    controller.b().onTrue(RobotCommands.prepareScore(Level.kL4, armSubsystem, elevatorSubsystem));
+    controller.start().onTrue(RobotCommands.score(armSubsystem, elevatorSubsystem));
+
+    controller.povLeft().onTrue(RobotCommands.prepareAlgaeL2Removal(armSubsystem, elevatorSubsystem));
+    controller.povRight().onTrue(RobotCommands.prepareAlgaeL3Removal(armSubsystem, elevatorSubsystem));
+    controller.leftStick().onTrue(RobotCommands.removeAlgae(armSubsystem, elevatorSubsystem));
+
     controller.rightBumper().whileTrue(intakeSubsystem.runIntake());
     controller.leftBumper().whileTrue(intakeSubsystem.reverseIntake());
   }
