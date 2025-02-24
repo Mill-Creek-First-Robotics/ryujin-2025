@@ -1,5 +1,10 @@
 package org.steeltalons.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 import static org.steeltalons.Constants.kTuningModeEnabled;
 import static org.steeltalons.Constants.ArmConstants.kConstraints;
 import static org.steeltalons.Constants.ArmConstants.kD;
@@ -31,6 +36,9 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 
 /**
  * Subsystem to control the arm.
@@ -123,6 +131,23 @@ public class ArmSubsystem extends SubsystemBase {
     return feedbackController.atSetpoint();
   }
 
+  /**
+   * Returns the arm's SysIdRoutine.
+   */
+  public SysIdRoutine getSysIdRoutine() {
+    return new SysIdRoutine(
+        new Config(
+            Volts.of(1).per(Second), Volts.of(3), Seconds.of(2)),
+        new Mechanism(
+            volts -> setVoltage(volts.magnitude()),
+            log -> {
+              log.motor("arm")
+                  .voltage(Volts.of(arm.getAppliedOutput() * 12))
+                  .angularPosition(Degrees.of(getPosition()))
+                  .angularVelocity(DegreesPerSecond.of(arm.getEncoder().getVelocity()));
+            }, this));
+  }
+
   // --- Private Member Functions ------------------------------------------------
 
   private double getPosition() {
@@ -130,7 +155,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   // --- SubsystemBase -----------------------------------------------------------
-  
+
   @Override
   public void periodic() {
     if (kTuningModeEnabled) {

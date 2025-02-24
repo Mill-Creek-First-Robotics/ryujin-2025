@@ -1,5 +1,10 @@
 package org.steeltalons.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 import static org.steeltalons.Constants.kTuningModeEnabled;
 import static org.steeltalons.Constants.ElevatorConstants.kConstraints;
 import static org.steeltalons.Constants.ElevatorConstants.kD;
@@ -29,6 +34,9 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 
 /**
  * Subsystem for controlling the elevator.
@@ -117,6 +125,20 @@ public class ElevatorSubsystem extends SubsystemBase {
    */
   public boolean atSetpoint() {
     return feedbackController.atSetpoint();
+  }
+
+  public SysIdRoutine getSysIdRoutine() {
+    return new SysIdRoutine(
+        new Config(
+            Volts.of(1).per(Second), Volts.of(5), Seconds.of(3)),
+        new Mechanism(
+            volts -> setVoltage(volts.magnitude()),
+            log -> {
+              log.motor("elevator")
+                  .voltage(Volts.of(motor.getAppliedOutput() * 12))
+                  .linearPosition(Meters.of(getPosition()))
+                  .linearVelocity(MetersPerSecond.of(motor.getEncoder().getVelocity()));
+            }, this));
   }
 
   // --- Private Member Functions ------------------------------------------------

@@ -18,6 +18,7 @@ public class Constants {
   }
 
   public static final boolean kTuningModeEnabled = true;
+  public static final boolean kSysIdModeEnabled = true;
   public static final int kControllerPort = 0;
 
   public static class MotorControllers {
@@ -97,19 +98,19 @@ public class Constants {
     }
 
     // [Feedback]
-    public static final double kP = 1;
+    public static final double kP = 0;
     public static final double kI = 0;
-    public static final double kD = 1;
+    public static final double kD = 0;
     // [Feedforward]
-    public static final double kG = 1;
-    public static final double kV = 1;
-    public static final double kS = 1;
+    public static final double kG = 0;
+    public static final double kV = 0;
+    public static final double kS = 0;
 
     // change (in meters) required to score on certain reef levels
     public static final double kScoringMovement = -0.25;
 
     // [Limits]
-    public static final double kMaxHeight = 20;
+    public static final double kMaxHeight = 2;
     public static final double kMinHeight = 0;
 
     public static final double kMaxVelocityMetersPerSecond = 1.3;
@@ -144,7 +145,7 @@ public class Constants {
     // change (in degrees) required to score on certain reef levels
     public static final double kScoringMovement = -45.84;
 
-    public static final double kP = 0.1;
+    public static final double kP = 0.0;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kG = 0.0;

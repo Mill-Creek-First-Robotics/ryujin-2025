@@ -5,6 +5,7 @@
 package org.steeltalons;
 
 import static org.steeltalons.Constants.kControllerPort;
+import static org.steeltalons.Constants.kSysIdModeEnabled;
 
 import org.steeltalons.subsystems.ArmSubsystem;
 import org.steeltalons.subsystems.DriveSubsystem;
@@ -16,6 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 public class RobotContainer {
   private CommandXboxController controller = new CommandXboxController(kControllerPort);
@@ -26,8 +29,12 @@ public class RobotContainer {
   private IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
   public RobotContainer() {
-    configureDefaultCommands();
-    configureBindings();
+    if (!kSysIdModeEnabled) {
+      configureDefaultCommands();
+      configureBindings();
+    } else {
+      configureSysIdBindings();
+    }
 
     // only log to NetworkTables when not in a match
     if (!DriverStation.isFMSAttached()) {
@@ -67,6 +74,35 @@ public class RobotContainer {
 
     controller.rightBumper().whileTrue(intakeSubsystem.runIntake());
     controller.leftBumper().whileTrue(intakeSubsystem.reverseIntake());
+  }
+
+  private void configureSysIdBindings() {
+    // defaults that stop the subsystem for safety.
+    armSubsystem.setDefaultCommand(
+        armSubsystem.run(() -> armSubsystem.setVoltage(0)));
+    elevatorSubsystem.setDefaultCommand(
+        elevatorSubsystem.run(() -> elevatorSubsystem.setVoltage(0)));
+
+    SysIdRoutine armRoutine = armSubsystem.getSysIdRoutine();
+    SysIdRoutine evRoutine = elevatorSubsystem.getSysIdRoutine();
+
+    controller.povUp().whileTrue(armRoutine.quasistatic(Direction.kForward))
+        .onFalse(armSubsystem.runOnce(() -> armSubsystem.setVoltage(0)));
+    controller.povDown().whileTrue(armRoutine.quasistatic(Direction.kReverse))
+        .onFalse(armSubsystem.runOnce(() -> armSubsystem.setVoltage(0)));
+    controller.povLeft().whileTrue(armRoutine.dynamic(Direction.kForward))
+        .onFalse(armSubsystem.runOnce(() -> armSubsystem.setVoltage(0)));
+    controller.povRight().whileTrue(armRoutine.dynamic(Direction.kReverse))
+        .onFalse(armSubsystem.runOnce(() -> armSubsystem.setVoltage(0)));
+
+    controller.y().whileTrue(evRoutine.quasistatic(Direction.kForward))
+        .onFalse(elevatorSubsystem.runOnce(() -> elevatorSubsystem.setVoltage(0)));
+    controller.a().whileTrue(evRoutine.quasistatic(Direction.kReverse))
+        .onFalse(elevatorSubsystem.runOnce(() -> elevatorSubsystem.setVoltage(0)));
+    controller.x().whileTrue(evRoutine.dynamic(Direction.kForward))
+        .onFalse(elevatorSubsystem.runOnce(() -> elevatorSubsystem.setVoltage(0)));
+    controller.b().whileTrue(evRoutine.dynamic(Direction.kReverse))
+        .onFalse(elevatorSubsystem.runOnce(() -> elevatorSubsystem.setVoltage(0)));
   }
 
   public Command getAutonomousCommand() {
