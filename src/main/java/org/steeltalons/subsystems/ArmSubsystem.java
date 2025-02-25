@@ -25,6 +25,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -86,7 +87,8 @@ public class ArmSubsystem extends SubsystemBase {
   public Command moveToTargetPosition() {
     return run(() -> {
       double fbVolts = feedbackController.calculate(getPosition());
-      double ffVolts = feedforwardController.calculate(getPosition(), feedbackController.getSetpoint().velocity);
+      double ffVolts = feedforwardController.calculate(Units.degreesToRadians(getPosition()),
+          feedbackController.getSetpoint().velocity);
       setVoltage(fbVolts + ffVolts);
     });
   }
