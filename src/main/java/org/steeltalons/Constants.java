@@ -18,7 +18,8 @@ public class Constants {
   }
 
   public static final boolean kTuningModeEnabled = true;
-  public static final boolean kSysIdModeEnabled = true;
+  public static final boolean kSysIdModeEnabled = false;
+  public static final boolean kManualModeEnabled = true;
   public static final int kControllerPort = 0;
 
   public static class MotorControllers {

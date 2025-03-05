@@ -5,6 +5,7 @@
 package org.steeltalons;
 
 import static org.steeltalons.Constants.kControllerPort;
+import static org.steeltalons.Constants.kManualModeEnabled;
 import static org.steeltalons.Constants.kSysIdModeEnabled;
 
 import org.steeltalons.subsystems.ArmSubsystem;
@@ -32,6 +33,8 @@ public class RobotContainer {
     if (!kSysIdModeEnabled) {
       configureDefaultCommands();
       configureBindings();
+    } else if (kManualModeEnabled) {
+      configureManualBindings();
     } else {
       configureSysIdBindings();
     }
@@ -74,6 +77,13 @@ public class RobotContainer {
 
     controller.rightBumper().whileTrue(intakeSubsystem.runIntake());
     controller.leftBumper().whileTrue(intakeSubsystem.reverseIntake());
+  }
+
+  private void configureManualBindings() {
+    elevatorSubsystem.setDefaultCommand(
+        elevatorSubsystem.run(() -> elevatorSubsystem.setVoltage(-controller.getLeftY() * 0.2)));
+    armSubsystem.setDefaultCommand(
+        armSubsystem.run(() -> armSubsystem.setVoltage(-controller.getRightY() * 0.2)));
   }
 
   private void configureSysIdBindings() {
