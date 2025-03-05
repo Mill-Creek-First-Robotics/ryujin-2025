@@ -29,8 +29,9 @@ public class RobotContainer {
   private ArmSubsystem armSubsystem = new ArmSubsystem();
   private IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
+  @SuppressWarnings("unused") // for below if statement
   public RobotContainer() {
-    if (!kSysIdModeEnabled) {
+    if (!kSysIdModeEnabled && !kManualModeEnabled) {
       configureDefaultCommands();
       configureBindings();
     } else if (kManualModeEnabled) {
