@@ -30,6 +30,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -55,8 +56,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem() {
     SparkBaseConfig config = new SparkMaxConfig().apply(kDefaultNeo550Config);
     config.encoder
-        .positionConversionFactor(1d)
-        .velocityConversionFactor(1d);
+        .positionConversionFactor(2 * Math.PI * Units.inchesToMeters(1) / 5)
+        .velocityConversionFactor(2 * Math.PI * Units.inchesToMeters(1) / 60 / 5);
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 

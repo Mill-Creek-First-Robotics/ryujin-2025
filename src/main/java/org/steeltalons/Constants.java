@@ -83,7 +83,7 @@ public class Constants {
 
     /**
      * Contains static constants that represent all the different elevator
-     * positions. Units are in Rotations.
+     * positions. Units are in meters.
      */
     public static class ElevatorPositions {
       public static final double kBottom = 0.0698;
