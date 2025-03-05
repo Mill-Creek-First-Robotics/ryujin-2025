@@ -81,6 +81,7 @@ public class RobotContainer {
   }
 
   private void configureManualBindings() {
+    driveSubsystem.setDefaultCommand(driveSubsystem.run(() -> driveSubsystem.driveCartesian(0, 0, 0, false)));
     elevatorSubsystem.setDefaultCommand(
         elevatorSubsystem.run(() -> elevatorSubsystem.setVoltage(-controller.getLeftY() * 0.2)));
     armSubsystem.setDefaultCommand(
