@@ -83,9 +83,9 @@ public class RobotContainer {
   private void configureManualBindings() {
     driveSubsystem.setDefaultCommand(driveSubsystem.run(() -> driveSubsystem.driveCartesian(0, 0, 0, false)));
     elevatorSubsystem.setDefaultCommand(
-        elevatorSubsystem.run(() -> elevatorSubsystem.setVoltage(-controller.getLeftY() * 0.2)));
+        elevatorSubsystem.run(() -> elevatorSubsystem.setVoltage(-controller.getLeftY() * 12)));
     armSubsystem.setDefaultCommand(
-        armSubsystem.run(() -> armSubsystem.setVoltage(-controller.getRightY() * 0.2)));
+        armSubsystem.run(() -> armSubsystem.setVoltage(-controller.getRightY() * 12)));
   }
 
   private void configureSysIdBindings() {
