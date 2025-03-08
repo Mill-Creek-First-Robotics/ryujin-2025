@@ -32,6 +32,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -114,7 +115,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     double input = Util.clamp(volts, -12, 12);
     double currentPos = getPosition();
 
-    if (currentPos > kMaxHeight || currentPos < kMinHeight) {
+    if (currentPos > kMaxHeight && input > 0) {
+      DriverStation.reportWarning("Elevator is outside maximum height. Preventing further upwards movement.", false);
+      input = 0;
+    } else if (currentPos < kMinHeight && input < 0) {
+      DriverStation.reportWarning("Elevator is outside minimum height. Preventing further downwards movement.", false);
       input = 0;
     }
 

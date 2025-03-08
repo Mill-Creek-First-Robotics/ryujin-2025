@@ -34,6 +34,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -119,7 +120,11 @@ public class ArmSubsystem extends SubsystemBase {
     double input = Util.clamp(volts, -12, 12);
     double currentPos = getPosition();
 
-    if (currentPos > kMaxAngleDegrees || currentPos < kMinAngleDegrees) {
+    if (currentPos > kMaxAngleDegrees && input > 0) {
+      DriverStation.reportWarning("Arm outside max height. Preventing further upwards movement.", false);
+      input = 0;
+    } else if (currentPos < kMinAngleDegrees && input < 0) {
+      DriverStation.reportWarning("Arm outside min height. Preventing further downwards movement.", false);
       input = 0;
     }
 
