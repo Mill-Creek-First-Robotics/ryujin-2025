@@ -15,7 +15,7 @@ import static org.steeltalons.Constants.ElevatorConstants.kMinHeight;
 import static org.steeltalons.Constants.ElevatorConstants.kP;
 import static org.steeltalons.Constants.ElevatorConstants.kS;
 import static org.steeltalons.Constants.ElevatorConstants.kV;
-import static org.steeltalons.Constants.MotorControllers.kDefaultNeo550Config;
+import static org.steeltalons.Constants.MotorControllers.kDefaultNeoConfig;
 import static org.steeltalons.Constants.MotorControllers.kElevatorMotor;
 
 import org.steeltalons.lib.TunableNumber;
@@ -55,7 +55,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final TunableNumber s = new TunableNumber("ElevatorSubsystem/S", kS);
 
   public ElevatorSubsystem() {
-    SparkBaseConfig config = new SparkMaxConfig().apply(kDefaultNeo550Config);
+    SparkBaseConfig config = new SparkMaxConfig().apply(kDefaultNeoConfig);
     config.encoder
         .positionConversionFactor(2 * Math.PI * Units.inchesToMeters(1) / 5)
         .velocityConversionFactor(2 * Math.PI * Units.inchesToMeters(1) / 60 / 5);
