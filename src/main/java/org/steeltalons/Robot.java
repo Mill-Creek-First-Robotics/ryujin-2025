@@ -4,17 +4,21 @@
 
 package org.steeltalons;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  private Lights lights;
 
   private final RobotContainer m_robotContainer;
 
   public Robot() {
     m_robotContainer = new RobotContainer();
+    lights = new Lights();
   }
 
   @Override
@@ -24,6 +28,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
+    lights.startColorWipe();
   }
 
   @Override
@@ -41,6 +46,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    lights.startFlame(DriverStation.getAlliance().orElse(Alliance.Red));
   }
 
   @Override
@@ -55,6 +62,10 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
+    }
+
+    if (!DriverStation.isFMSAttached()) {
+      lights.startFlame(DriverStation.getAlliance().orElse(Alliance.Red));
     }
   }
 
