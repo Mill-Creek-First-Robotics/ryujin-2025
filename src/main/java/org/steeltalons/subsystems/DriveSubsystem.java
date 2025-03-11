@@ -1,6 +1,7 @@
 package org.steeltalons.subsystems;
 
 import static org.steeltalons.Constants.DrivetrainConstants.kGearRatio;
+import static org.steeltalons.Constants.DrivetrainConstants.kJoystickRateLimit;
 import static org.steeltalons.Constants.DrivetrainConstants.kWheelDiameter;
 import static org.steeltalons.Constants.MotorControllers.kDefaultNeoConfig;
 import static org.steeltalons.Constants.MotorControllers.kFrontLeft;
@@ -20,6 +21,7 @@ import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
@@ -44,6 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
   private MecanumDrivePoseEstimator poseEstimator;
   private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
       .getStructTopic("Robot Pose", Pose2d.struct).publish();
+  private SlewRateLimiter rateLimiter = new SlewRateLimiter(kJoystickRateLimit);
 
   public DriveSubsystem() {
     SparkBaseConfig config = new SparkMaxConfig().apply(kDefaultNeoConfig);
@@ -89,7 +92,11 @@ public class DriveSubsystem extends SubsystemBase {
     if (isFieldOriented) {
       heading = gyro.getRotation2d().unaryMinus();
     }
-    drivetrain.driveCartesian(x, y, z, heading);
+    // apply acceleration limits
+    var _x = rateLimiter.calculate(x);
+    var _y = rateLimiter.calculate(y);
+    var _z = rateLimiter.calculate(z);
+    drivetrain.driveCartesian(_x, _y, _z, heading);
   }
 
   // --- Private Member Functions ------------------------------------------------

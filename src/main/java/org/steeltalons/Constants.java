@@ -52,6 +52,7 @@ public class Constants {
     private DrivetrainConstants() {
     }
 
+    public static final double kJoystickRateLimit = 15;
     public static final double kGearRatio = 10.71;
     // [Dimensions]
     public static final Distance kWheelDiameter = Units.Inches.of(6);
