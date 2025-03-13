@@ -9,7 +9,7 @@ import static org.steeltalons.Constants.ElevatorConstants.kMinHeight;
 import static org.steeltalons.Constants.ElevatorConstants.kP;
 import static org.steeltalons.Constants.ElevatorConstants.kS;
 import static org.steeltalons.Constants.ElevatorConstants.kV;
-import static org.steeltalons.Constants.MotorControllers.kDefaultNeo550Config;
+import static org.steeltalons.Constants.MotorControllers.kDefaultNeoConfig;
 import static org.steeltalons.Constants.MotorControllers.kElevatorMotor;
 
 import org.steeltalons.lib.Util;
@@ -23,7 +23,9 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,10 +39,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   private ElevatorFeedforward feedforwardController = new ElevatorFeedforward(kS, kG, kV);
 
   public ElevatorSubsystem() {
-    SparkBaseConfig config = new SparkMaxConfig().apply(kDefaultNeo550Config);
+    SparkBaseConfig config = new SparkMaxConfig().apply(kDefaultNeoConfig);
     config.encoder
-        .positionConversionFactor(1d)
-        .velocityConversionFactor(1d);
+        .positionConversionFactor(2 * Math.PI * Units.inchesToMeters(1) / 5)
+        .velocityConversionFactor(2 * Math.PI * Units.inchesToMeters(1) / 60 / 5);
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -97,7 +99,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     double input = Util.clamp(volts, -12, 12);
     double currentPos = getPosition();
 
-    if (currentPos > kMaxHeight || currentPos < kMinHeight) {
+    if (currentPos >= kMaxHeight && input > 0) {
+      DriverStation.reportWarning("Elevator is outside maximum height. Preventing further upwards movement.", false);
+      input = 0;
+    } else if (currentPos <= kMinHeight && input < 0) {
+      DriverStation.reportWarning("Elevator is outside minimum height. Preventing further downwards movement.", false);
       input = 0;
     }
 

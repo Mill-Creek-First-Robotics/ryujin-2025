@@ -20,6 +20,7 @@ import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
@@ -37,8 +38,9 @@ public class DriveSubsystem extends SubsystemBase {
   private SparkMax frMotor = new SparkMax(kFrontRight, MotorType.kBrushless);
   private SparkMax rlMotor = new SparkMax(kRearLeft, MotorType.kBrushless);
   private SparkMax rrMotor = new SparkMax(kRearRight, MotorType.kBrushless);
-  private MecanumDrive drivetrain = new MecanumDrive(flMotor, rlMotor, frMotor, rrMotor);
+  private MecanumDrive drivetrain;
   private AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+  private SlewRateLimiter rateLimiter = new SlewRateLimiter(15);
 
   // math & telemetry
   private MecanumDrivePoseEstimator poseEstimator;
@@ -59,6 +61,8 @@ public class DriveSubsystem extends SubsystemBase {
     config.inverted(true);
     frMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rrMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    drivetrain = new MecanumDrive(flMotor, rlMotor, frMotor, rrMotor);
 
     poseEstimator = new MecanumDrivePoseEstimator(DrivetrainConstants.kDriveKinematics, gyro.getRotation2d(),
         // will use pathplanner for initial pose eventually
@@ -89,7 +93,10 @@ public class DriveSubsystem extends SubsystemBase {
     if (isFieldOriented) {
       heading = gyro.getRotation2d().unaryMinus();
     }
-    drivetrain.driveCartesian(x, y, z, heading);
+    var _x = rateLimiter.calculate(x);
+    var _y = rateLimiter.calculate(y);
+    var _z = rateLimiter.calculate(z);
+    drivetrain.driveCartesian(_x, _y, _z, heading);
   }
 
   // --- Private Member Functions ------------------------------------------------

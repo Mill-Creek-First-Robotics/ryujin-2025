@@ -11,7 +11,6 @@ import org.steeltalons.subsystems.DriveSubsystem;
 import org.steeltalons.subsystems.ElevatorSubsystem;
 import org.steeltalons.subsystems.IntakeSubsystem;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -28,13 +27,8 @@ public class RobotContainer {
     configureDefaultCommands();
     configureBindings();
 
-    // only log to NetworkTables when not in a match
-    if (!DriverStation.isFMSAttached()) {
-      SmartDashboard.putData(driveSubsystem);
-      SmartDashboard.putData(elevatorSubsystem);
-      SmartDashboard.putData(armSubsystem);
-      SmartDashboard.putData(intakeSubsystem);
-    }
+    SmartDashboard.putData(elevatorSubsystem);
+    SmartDashboard.putData(armSubsystem);
   }
 
   private void configureDefaultCommands() {
@@ -42,27 +36,22 @@ public class RobotContainer {
         driveSubsystem.run(() -> {
           driveSubsystem.driveCartesian(
               -controller.getLeftY(),
-              -controller.getLeftX(),
-              -controller.getRightX(),
+              controller.getLeftX(),
+              controller.getRightX(),
               true);
         }));
-    elevatorSubsystem.setDefaultCommand(elevatorSubsystem.moveToTargetPosition());
-    armSubsystem.setDefaultCommand(armSubsystem.moveToTargetPosition());
+    elevatorSubsystem.setDefaultCommand(elevatorSubsystem.run(() -> elevatorSubsystem.setVoltage(0)));
+    armSubsystem.setDefaultCommand(armSubsystem.run(() -> armSubsystem.setVoltage(0)));
   }
 
   private void configureBindings() {
-    controller.povUp().onTrue(RobotCommands.prepareCoralIntake(armSubsystem, elevatorSubsystem));
-    controller.povDown().onTrue(RobotCommands.intakeCoral(armSubsystem, elevatorSubsystem));
+    controller.rightTrigger(0.1)
+        .whileTrue(elevatorSubsystem.run(() -> elevatorSubsystem.setVoltage(controller.getRightTriggerAxis() * 4)));
+    controller.leftTrigger(0.1)
+        .whileTrue(elevatorSubsystem.run(() -> elevatorSubsystem.setVoltage(-controller.getLeftTriggerAxis() * 4)));
 
-    controller.x().onTrue(RobotCommands.prepareScore(Level.kL1, armSubsystem, elevatorSubsystem));
-    controller.y().onTrue(RobotCommands.prepareScore(Level.kL2, armSubsystem, elevatorSubsystem));
-    controller.a().onTrue(RobotCommands.prepareScore(Level.kL3, armSubsystem, elevatorSubsystem));
-    controller.b().onTrue(RobotCommands.prepareScore(Level.kL4, armSubsystem, elevatorSubsystem));
-    controller.start().onTrue(RobotCommands.score(armSubsystem, elevatorSubsystem));
-
-    controller.povLeft().onTrue(RobotCommands.prepareAlgaeL2Removal(armSubsystem, elevatorSubsystem));
-    controller.povRight().onTrue(RobotCommands.prepareAlgaeL3Removal(armSubsystem, elevatorSubsystem));
-    controller.leftStick().onTrue(RobotCommands.removeAlgae(armSubsystem, elevatorSubsystem));
+    controller.povUp().whileTrue(armSubsystem.run(() -> armSubsystem.setVoltage(8)));
+    controller.povDown().whileTrue(armSubsystem.run(() -> armSubsystem.setVoltage(-8)));
 
     controller.rightBumper().whileTrue(intakeSubsystem.runIntake());
     controller.leftBumper().whileTrue(intakeSubsystem.reverseIntake());

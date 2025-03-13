@@ -136,7 +136,7 @@ public class Constants {
       public static final double kTop = 90;
     }
 
-    public static final boolean kInverted = true;
+    public static final boolean kInverted = false;
     // 20:1 gearbox + 2:1 pulleys
     public static final double kGearing = 40;
 
@@ -164,7 +164,7 @@ public class Constants {
     }
 
     public static final boolean kInverted = false;
-    public static final double kIntakeVoltage = 3;
+    public static final double kIntakeVoltage = 12;
     public static final double kOuttakeVoltage = -12;
 
   } // end IntakeConstants ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
