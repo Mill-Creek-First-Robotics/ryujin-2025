@@ -37,7 +37,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SparkMax frMotor = new SparkMax(kFrontRight, MotorType.kBrushless);
   private SparkMax rlMotor = new SparkMax(kRearLeft, MotorType.kBrushless);
   private SparkMax rrMotor = new SparkMax(kRearRight, MotorType.kBrushless);
-  private MecanumDrive drivetrain = new MecanumDrive(flMotor, rlMotor, frMotor, rrMotor);
+  private MecanumDrive drivetrain;
   private AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 
   // math & telemetry
@@ -59,6 +59,8 @@ public class DriveSubsystem extends SubsystemBase {
     config.inverted(true);
     frMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rrMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    drivetrain = new MecanumDrive(flMotor, rlMotor, frMotor, rrMotor);
 
     poseEstimator = new MecanumDrivePoseEstimator(DrivetrainConstants.kDriveKinematics, gyro.getRotation2d(),
         // will use pathplanner for initial pose eventually
