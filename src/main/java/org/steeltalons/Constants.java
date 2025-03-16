@@ -6,7 +6,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -32,16 +31,12 @@ public class Constants {
         .apply(kDefaultNeoConfig)
         .smartCurrentLimit(20);
 
-    // [Drivetrain] // placeholders
+    // [Drivetrain]
     public static final int kFrontLeft = 1;
     public static final int kFrontRight = 2;
     public static final int kRearLeft = 3;
     public static final int kRearRight = 4;
-    // [Elevator] // placeholder
-    public static final int kElevatorMotor = 5;
-    // [Arm] // placeholder
-    public static final int kArmMotor = 6;
-    // [Intake] // placeholder
+    // [Intake]
     public static final int kIntakeMotor = 7;
   } // end MotorControllers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -74,91 +69,6 @@ public class Constants {
         kWheelOffsets[3]);
   } // end DrivetrainConstants ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  public static class ElevatorConstants {
-    private ElevatorConstants() {
-    }
-
-    /**
-     * Contains static constants that represent all the different elevator
-     * positions. Units are in Rotations.
-     */
-    public static class ElevatorPositions {
-      public static final double kBottom = 0.0698;
-      public static final double kIntakePrep = 0.55;
-      public static final double kIntake = 0.355;
-      public static final double kAlgaeL2 = 0.884;
-      public static final double kAlgaeL3 = 1.234;
-      public static final double kL1 = 0.323;
-      public static final double kL2 = 0.31;
-      public static final double kL3 = 0.7;
-      public static final double kL4 = 1.27;
-      public static final double kTop = 1.57;
-    }
-
-    // [Feedback]
-    public static final double kP = 1;
-    public static final double kI = 0;
-    public static final double kD = 1;
-    // [Feedforward]
-    public static final double kG = 1;
-    public static final double kV = 1;
-    public static final double kS = 1;
-
-    // change (in meters) required to score on certain reef levels
-    public static final double kScoringMovement = -0.25;
-
-    // [Limits]
-    public static final double kMaxHeight = 20;
-    public static final double kMinHeight = 0;
-
-    public static final double kMaxVelocityMetersPerSecond = 1.3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-    public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
-        kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared);
-  } // end ElevatorConstants ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  public static class ArmConstants {
-    private ArmConstants() {
-    }
-
-    /**
-     * Contains static constants that represent all the different arm positions.
-     * Units are in degrees. Zero is horizontal. Counterclockwise (if looking at the
-     * robot where the arm is facing to the right) is positive.
-     */
-    public static class ArmPositions {
-      public static final double kBottom = -90;
-      public static final double kHorizontal = 0;
-      public static final double kL1 = 0;
-      public static final double kL2 = 55;
-      public static final double kL3 = 55;
-      public static final double kL4 = 59.18654;
-      public static final double kTop = 90;
-    }
-
-    public static final boolean kInverted = false;
-    // 20:1 gearbox + 2:1 pulleys
-    public static final double kGearing = 40;
-
-    // change (in degrees) required to score on certain reef levels
-    public static final double kScoringMovement = -45.84;
-
-    public static final double kP = 0.1;
-    public static final double kI = 0.0;
-    public static final double kD = 0.0;
-    public static final double kG = 0.0;
-    public static final double kV = 0.0;
-    public static final double kS = 0.0;
-
-    public static final double kMaxAngleDegrees = 95;
-    public static final double kMinAngleDegrees = -100;
-
-    public static final double kMaxVelocityDegreesPerSecond = 270;
-    public static final double kMaxAccelerationDegreesPerSecondSquared = 720;
-    public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
-        kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSquared);
-  } // end ArmConstants ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
   public static class IntakeConstants {
     private IntakeConstants() {
     }
@@ -166,6 +76,5 @@ public class Constants {
     public static final boolean kInverted = false;
     public static final double kIntakeVoltage = 12;
     public static final double kOuttakeVoltage = -12;
-
   } // end IntakeConstants ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 }
