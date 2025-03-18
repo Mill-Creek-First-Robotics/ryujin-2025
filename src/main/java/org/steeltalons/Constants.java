@@ -36,6 +36,8 @@ public class Constants {
     public static final int kFrontRight = 2;
     public static final int kRearLeft = 3;
     public static final int kRearRight = 4;
+    // [Roller]
+    public static final int kRollerMotor = 5;
   } // end MotorControllers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   public static class DrivetrainConstants {
@@ -66,4 +68,11 @@ public class Constants {
         kWheelOffsets[2],
         kWheelOffsets[3]);
   } // end DrivetrainConstants ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  public static class RollerConstants {
+    private RollerConstants() {
+    }
+
+    public static final double kEjectVolts = 5.28;
+  }
 }
