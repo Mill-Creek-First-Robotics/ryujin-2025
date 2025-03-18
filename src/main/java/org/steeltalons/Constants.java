@@ -36,8 +36,6 @@ public class Constants {
     public static final int kFrontRight = 2;
     public static final int kRearLeft = 3;
     public static final int kRearRight = 4;
-    // [Intake]
-    public static final int kIntakeMotor = 7;
   } // end MotorControllers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   public static class DrivetrainConstants {
@@ -68,13 +66,4 @@ public class Constants {
         kWheelOffsets[2],
         kWheelOffsets[3]);
   } // end DrivetrainConstants ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  public static class IntakeConstants {
-    private IntakeConstants() {
-    }
-
-    public static final boolean kInverted = false;
-    public static final double kIntakeVoltage = 12;
-    public static final double kOuttakeVoltage = -12;
-  } // end IntakeConstants ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 }
