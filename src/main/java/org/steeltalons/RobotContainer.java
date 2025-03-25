@@ -5,6 +5,7 @@ import static org.steeltalons.Constants.kControllerPort;
 import org.steeltalons.subsystems.DriveSubsystem;
 import org.steeltalons.subsystems.RollerSubsystem;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -17,6 +18,8 @@ public class RobotContainer {
   public RobotContainer() {
     configureDefaultCommands();
     configureBindings();
+
+    SmartDashboard.putData(driveSubsystem);
   }
 
   private void configureDefaultCommands() {
