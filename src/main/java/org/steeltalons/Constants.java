@@ -1,5 +1,6 @@
 package org.steeltalons;
 
+import static edu.wpi.first.math.util.Units.degreesToRadians;
 import static edu.wpi.first.units.Units.Amps;
 
 import com.pathplanner.lib.config.ModuleConfig;
@@ -10,8 +11,15 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Current;
@@ -107,5 +115,18 @@ public class Constants {
     }
 
     public static final double kEjectVolts = 5.28;
+  }
+
+  public static class VisionConstants {
+    public static final String kCameraName = "limelight";
+    // relative to center of robot
+    public static final Transform3d kCameraPos = new Transform3d(
+        // 0.1m forwards, 0.5m up
+        new Translation3d(0.1, 0.0, 0.5),
+        // tilted 15deg up
+        new Rotation3d(0, degreesToRadians(-15), 0));
+    // the standard deviations of vision estimated poses that affect correction rate
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8); // placeholder
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1); // placeholder
   }
 }

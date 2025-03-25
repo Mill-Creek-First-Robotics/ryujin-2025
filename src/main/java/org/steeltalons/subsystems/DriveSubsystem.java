@@ -14,6 +14,9 @@ import static org.steeltalons.Constants.MotorControllers.kRearLeft;
 import static org.steeltalons.Constants.MotorControllers.kRearRight;
 
 import org.steeltalons.Constants.DrivetrainConstants;
+import org.steeltalons.Constants.VisionConstants;
+import org.steeltalons.lib.LimelightHelpers;
+import org.steeltalons.lib.LimelightHelpers.PoseEstimate;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -29,6 +32,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -36,6 +40,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -114,6 +119,17 @@ public class DriveSubsystem extends SubsystemBase {
     PathPlannerLogging.setLogActivePathCallback(poses -> {
       field.getObject("path").setPoses(poses);
     });
+
+    // configure vision
+    var cameraPos = VisionConstants.kCameraPos;
+    LimelightHelpers.setCameraPose_RobotSpace(
+        VisionConstants.kCameraName,
+        cameraPos.getX(),
+        cameraPos.getY(),
+        cameraPos.getZ(),
+        cameraPos.getRotation().getX(),
+        cameraPos.getRotation().getY(),
+        cameraPos.getRotation().getZ());
   }
 
   // --- Public Member Functions -------------------------------------------------
@@ -191,11 +207,75 @@ public class DriveSubsystem extends SubsystemBase {
         rrMotor.getEncoder().getVelocity());
   }
 
+  private static double getBestTargetArea(PoseEstimate estimate) {
+    if (estimate.rawFiducials.length == 0) {
+      return 0;
+    }
+    double max = estimate.rawFiducials[0].ta;
+    for (var f : estimate.rawFiducials) {
+      if (f.ta > max) {
+        max = f.ta;
+      }
+    }
+    return max;
+  }
+
+  /**
+   * Returns true if the given estimate should be accepted and added to the
+   * poseEstimator.
+   */
+  private boolean shouldAcceptVisionMeasurement(PoseEstimate estimate) {
+    // turning faster than 720 degrees per second
+    if (Math.abs(gyro.getRate()) > 720) {
+      return false;
+    }
+    // no visible tag
+    if (estimate.tagCount == 0) {
+      return false;
+    }
+    return true;
+  }
+
   // --- SubsystemBase -----------------------------------------------------------
 
   @Override
   public void periodic() {
     poseEstimator.update(gyro.getRotation2d(), getWheelPositions());
+
+    // update vision
+    LimelightHelpers.SetRobotOrientation(
+        VisionConstants.kCameraName,
+        poseEstimator.getEstimatedPosition().getRotation().getDegrees(),
+        0, 0, 0, 0, 0);
+
+    PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.kCameraName);
+    // strategy taken from:
+    // https://www.chiefdelphi.com/t/limelight-odometry-question/433311/6
+    if (shouldAcceptVisionMeasurement(estimate)) {
+      double poseDifference = poseEstimator.getEstimatedPosition()
+          .getTranslation()
+          .getDistance(estimate.pose.getTranslation());
+      double xyStdDevs = .7;
+      double degStdDevs = 9999999;
+      // multiple visible tags
+      if (estimate.tagCount >= 2) {
+        xyStdDevs = .5;
+        degStdDevs = 6;
+      }
+      // target has large area and estimated pose is close
+      else if (getBestTargetArea(estimate) > 0.8 && poseDifference < 0.5) {
+        xyStdDevs = 1;
+        degStdDevs = 12;
+      }
+      // target is further away, but estimated pose is closer
+      else if (getBestTargetArea(estimate) > 0.1 && poseDifference < 0.3) {
+        xyStdDevs = 2;
+        degStdDevs = 30;
+      }
+      poseEstimator.addVisionMeasurement(
+          estimate.pose, estimate.timestampSeconds,
+          VecBuilder.fill(xyStdDevs, xyStdDevs, Units.degreesToRadians(degStdDevs)));
+    }
 
     field.setRobotPose(poseEstimator.getEstimatedPosition());
     posePublisher.set(poseEstimator.getEstimatedPosition());
