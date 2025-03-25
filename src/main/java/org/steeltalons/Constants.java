@@ -1,12 +1,20 @@
 package org.steeltalons;
 
+import static edu.wpi.first.units.Units.Amps;
+
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
@@ -45,6 +53,7 @@ public class Constants {
     }
 
     public static final double kGearRatio = 10.71;
+    public static final Current kMaxCurrent = Amps.of(50);
     // [Dimensions]
     public static final Distance kWheelDiameter = Units.Inches.of(6);
     // horizontal distance from middle to a wheel in meters
@@ -67,6 +76,30 @@ public class Constants {
         kWheelOffsets[1],
         kWheelOffsets[2],
         kWheelOffsets[3]);
+    // --- PID ---------------------------------------------------------------------
+    // [Pathplanning]
+    public static final double kTranslationalXP = 5; // placeholder
+    public static final double kTranslationalYP = 5; // placeholder
+    public static final double kRotationalP = 5; // placeholder
+    // [Motors]
+    public static final double kP = 1; // placeholder
+    public static final double kD = 0; // placeholder
+
+    // --- Pathplanner -------------------------------------------------------------
+    public static final RobotConfig kRobotConfig = new RobotConfig(
+        kMass,
+        kMomentOfInertia,
+        new ModuleConfig(
+            kWheelDiameter.times(.5),
+            kMaxSpeed,
+            kWheelCoefficientOfFriction,
+            DCMotor.getNEO(1).withReduction(kGearRatio),
+            kMaxCurrent,
+            1),
+        kWheelOffsets);
+    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(
+        new PIDConstants(kTranslationalXP),
+        new PIDConstants(kRotationalP));
   } // end DrivetrainConstants ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   public static class RollerConstants {
