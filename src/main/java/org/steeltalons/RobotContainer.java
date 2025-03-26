@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class RobotContainer {
@@ -30,6 +31,11 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("roller_eject", rollerSubsystem.eject());
     NamedCommands.registerCommand("roller_stop", rollerSubsystem.stop());
+    NamedCommands.registerCommand("score", Commands.sequence(
+      rollerSubsystem.eject().withTimeout(0.3),
+      // schedule command is used so that this command composition ends instantly, but the motor stays stopped.
+      new ScheduleCommand(rollerSubsystem.stop())
+    ));
 
     autoChooser = AutoBuilder.buildAutoChooser("Pass line");
     autoChooser.addOption("Pass line", Autos.passLine(driveSubsystem));
