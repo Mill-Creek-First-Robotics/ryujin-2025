@@ -5,10 +5,13 @@ import static org.steeltalons.Constants.kControllerPort;
 import org.steeltalons.subsystems.DriveSubsystem;
 import org.steeltalons.subsystems.RollerSubsystem;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class RobotContainer {
@@ -16,6 +19,8 @@ public class RobotContainer {
 
   private DriveSubsystem driveSubsystem = new DriveSubsystem();
   private RollerSubsystem rollerSubsystem = new RollerSubsystem();
+
+  private SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
     configureDefaultCommands();
@@ -25,6 +30,11 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("roller_eject", rollerSubsystem.eject());
     NamedCommands.registerCommand("roller_stop", rollerSubsystem.stop());
+
+    autoChooser = AutoBuilder.buildAutoChooser("Pass line");
+    autoChooser.addOption("Pass line", Autos.passLine(driveSubsystem));
+    autoChooser.addOption("NOTHING", Commands.none());
+    SmartDashboard.putData("Auto chooser", autoChooser);
   }
 
   private void configureDefaultCommands() {
@@ -47,6 +57,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Autos.passLine(driveSubsystem);
+    return autoChooser.getSelected();
   }
 }
