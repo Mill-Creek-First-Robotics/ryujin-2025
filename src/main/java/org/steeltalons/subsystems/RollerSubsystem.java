@@ -1,3 +1,4 @@
+
 package org.steeltalons.subsystems;
 
 import static org.steeltalons.Constants.MotorControllers.kRollerMotor;
@@ -46,5 +47,13 @@ public class RollerSubsystem extends SubsystemBase {
    */
   public Command eject() {
     return run(() -> setVoltage(kEjectVolts));
+  }
+
+  /**
+   * Returns a {@link Command} that stops the roller motor.
+   * @return A command requiring this subsystem that will not stop until interrupted.
+   */
+  public Command stop() {
+    return run(() -> setVoltage(0));
   }
 }
