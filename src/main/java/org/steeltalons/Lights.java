@@ -13,10 +13,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Lights extends SubsystemBase {
+  public static final int kLength = 75;
   private AddressableLED leds = new AddressableLED(0);
-  private AddressableLEDBuffer buf = new AddressableLEDBuffer(120);
-  private AddressableLEDBufferView left = buf.createView(0, 59);
-  private AddressableLEDBufferView right = buf.createView(60, 119).reversed();
+  private AddressableLEDBuffer buf = new AddressableLEDBuffer(kLength);
+  private AddressableLEDBufferView left = buf.createView(0, kLength - 1);
+  // private AddressableLEDBufferView right = buf.createView(kLength, kLength * 2 - 1).reversed();
   private Animation currentAnimation;
 
   public Lights() {
@@ -49,19 +50,18 @@ public class Lights extends SubsystemBase {
       getDefaultCommand().cancel();
     }
     clearLights();
-    currentAnimation = new ColorWipe(this, 60);
+    currentAnimation = new ColorWipe(this, kLength);
     updateDefaultCommand();
   }
 
   public void setRGB(int index, int r, int g, int b) {
     left.setRGB(index, r, g, b);
-    right.setRGB(index, r, g, b);
+    // right.setRGB(index, r, g, b);
   }
 
   public void clearLights() {
     left.forEach((i, r, g, b) -> {
-      left.setRGB(i, 0, 0, 0);
-      right.setRGB(i, 0, 0, 0);
+      setRGB(i, 0, 0, 0);
     });
   }
 
@@ -102,7 +102,7 @@ class ColorWipe implements Animation {
 
   @Override
   public void play() {
-    if (index >= length)
+    if (index >= length - 1)
       return;
     lights.setRGB(index++, 0, 0xff, 0);
     lights.updateBuf();
@@ -119,7 +119,7 @@ class ColorWipe implements Animation {
 
   @Override
   public boolean isFinished() {
-    return index >= 59;
+    return index >= length - 1;
   }
 }
 
@@ -127,7 +127,7 @@ class Flame implements Animation {
   private Lights lights;
   private final int cooling;
   private final int sparking;
-  private final int[] heat = new int[60];
+  private final int[] heat = new int[Lights.kLength];
   private final Random rand = new Random();
   private final Runnable updateColors;
 
@@ -164,7 +164,7 @@ class Flame implements Animation {
   }
 
   private void updateColorBlue() {
-    for (int i = 0; i < 60; i++) {
+    for (int i = 0; i < Lights.kLength; i++) {
       int tl92 = Math.round(heat[i] / 255f * 191);
       int heatramp = tl92 & 0x3f;
       heatramp <<= 2;
@@ -180,7 +180,7 @@ class Flame implements Animation {
   }
 
   private void updateColorRed() {
-    for (int i = 0; i < 60; i++) {
+    for (int i = 0; i < Lights.kLength; i++) {
       int tl92 = Math.round(heat[i] / 255f * 191);
       int heatramp = tl92 & 0x3f;
       heatramp <<= 2;
